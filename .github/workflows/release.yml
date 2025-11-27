@@ -100,7 +100,7 @@ jobs:
           path: artifacts
 
       - name: Move Artifacts
-        run: npm exec napi -- artifacts --cwd . ./artifacts
+        run: npm exec napi -- artifacts --dir ./artifacts
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
