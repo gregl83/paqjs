@@ -28,11 +28,9 @@ jobs:
           - os: macos-latest
             target: x86_64-apple-darwin
             build_cmd: npm run build -- --target x86_64-apple-darwin
-            rustflags: "-C link-arg=-undefined -C link-arg=dynamic_lookup"
           - os: macos-latest
             target: aarch64-apple-darwin
             build_cmd: npm run build -- --target aarch64-apple-darwin
-            rustflags: "-C link-arg=-undefined -C link-arg=dynamic_lookup"
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             build_cmd: npm run build -- --target x86_64-pc-windows-msvc
@@ -68,6 +66,8 @@ jobs:
           CC_aarch64_unknown_linux_gnu: aarch64-linux-gnu-gcc
           CXX_aarch64_unknown_linux_gnu: aarch64-linux-gnu-g++
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+          MACOSX_DEPLOYMENT_TARGET: "10.13"
+          RUSTFLAGS: ${{ contains(matrix.os, 'macos') && '-C link-arg=-undefined -C link-arg=dynamic_lookup' || '' }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
