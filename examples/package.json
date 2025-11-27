@@ -1,0 +1,7 @@
+{
+    "name": "paqjs-examples",
+    "private": true,
+    "dependencies": {
+        "paqjs": "file:.."
+    }
+}

@@ -1,0 +1,29 @@
+[package]
+name = "paqjs"
+version = "1.3.3"
+authors = ["Gregory Langlais <_@gregorylanglais.com>"]
+edition = "2021"
+description = "Hash file or directory recursively."
+license = "MIT"
+readme = "README.md"
+keywords = [
+    "hash",
+    "blake3",
+    "directory-traversal",
+    "cryptographic",
+    "python",
+]
+repository = "https://github.com/gregl83/paqjs"
+homepage = "https://pypi.org/project/paqjs"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+napi = { version = "2.10.0", default-features = false, features = ["napi4"] }
+napi-derive = "2.10.0"
+paq = "1.3.3"
+
+[build-dependencies]
+napi-build = "2.0.1"
