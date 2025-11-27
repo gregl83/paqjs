@@ -67,7 +67,7 @@ console.log(source_hash);
 ```javascript
 const { hashSource } = require('paqjs');
 
-const source = "/patth/to/source";
+const source = "/path/to/source";
 const ignore_hidden = true; // .dir or .file
 
 const source_hash = hashSource(
