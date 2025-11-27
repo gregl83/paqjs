@@ -104,9 +104,6 @@ jobs:
         with:
           files: artifacts/*
 
-      - name: Create npm dirs
-        run: npm exec napi -- create-npm-dirs
-
       - name: Move Artifacts
         run: npm exec napi -- artifacts --dir ./artifacts
 
