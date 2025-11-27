@@ -99,15 +99,27 @@ jobs:
           merge-multiple: true
           path: artifacts
 
-      - name: Move Artifacts
-        run: npm exec napi -- artifacts --dir ./artifacts
-
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: artifacts/*
 
+      - name: Create npm dirs
+        run: npm exec napi -- create-npm-dirs
+
+      - name: Move Artifacts
+        run: npm exec napi -- artifacts --dir ./artifacts
+
+      - name: List packages
+        run: ls -R npm
+
       - name: Publish to NPM
-        run: npm publish --provenance --access public
+        run: |
+          for dir in npm/*/; do
+            cd "$dir"
+            npm publish --provenance --access public
+            cd ../..
+          done
+          npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
