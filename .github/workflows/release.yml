@@ -24,13 +24,18 @@ jobs:
             build_cmd: npm run build -- --target x86_64-unknown-linux-gnu
           - os: ubuntu-latest
             target: aarch64-unknown-linux-gnu
-            build_cmd: npm run build -- --target aarch64-unknown-linux-gnu --cargo-name cross
+            build_cmd: npm run build -- --target aarch64-unknown-linux-gnu
           - os: macos-latest
             target: x86_64-apple-darwin
             build_cmd: npm run build -- --target x86_64-apple-darwin
+            rustflags: "-C link-arg=-undefined -C link-arg=dynamic_lookup"
           - os: macos-latest
             target: aarch64-apple-darwin
             build_cmd: npm run build -- --target aarch64-apple-darwin
+            rustflags: "-C link-arg=-undefined -C link-arg=dynamic_lookup"
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            build_cmd: npm run build -- --target x86_64-pc-windows-msvc
     steps:
       - uses: actions/checkout@v4
 
@@ -44,6 +49,12 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
+      - name: Install ARM64 GCC (Linux)
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+
       - name: Install Cross
         if: matrix.target == 'aarch64-unknown-linux-gnu'
         run: cargo install cross --git https://github.com/cross-rs/cross
@@ -53,6 +64,10 @@ jobs:
 
       - name: Build Binary
         run: ${{ matrix.build_cmd }}
+        env:
+          CC_aarch64_unknown_linux_gnu: aarch64-linux-gnu-gcc
+          CXX_aarch64_unknown_linux_gnu: aarch64-linux-gnu-g++
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
