@@ -21,20 +21,16 @@ jobs:
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            build_args: --target x86_64-unknown-linux-gnu
+            build_cmd: npm run build -- --target x86_64-unknown-linux-gnu
           - os: ubuntu-latest
             target: aarch64-unknown-linux-gnu
-            build_args: --target aarch64-unknown-linux-gnu --use-cross
+            build_cmd: npm run build -- --target aarch64-unknown-linux-gnu --cargo-name cross
           - os: macos-latest
             target: x86_64-apple-darwin
-            build_args: --target x86_64-apple-darwin
+            build_cmd: npm run build -- --target x86_64-apple-darwin
           - os: macos-latest
             target: aarch64-apple-darwin
-            build_args: --target aarch64-apple-darwin
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            build_args: --target x86_64-pc-windows-msvc
-
+            build_cmd: npm run build -- --target aarch64-apple-darwin
     steps:
       - uses: actions/checkout@v4
 
@@ -48,11 +44,15 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
+      - name: Install Cross
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: cargo install cross --git https://github.com/cross-rs/cross
+
       - name: Install Dependencies
         run: npm install
 
       - name: Build Binary
-        run: npm run build -- ${{ matrix.build_args }}
+        run: ${{ matrix.build_cmd }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
