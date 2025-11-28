@@ -114,7 +114,7 @@ jobs:
         run: ls -R npm
 
       - name: Prepare packages
-        run: npm exec napi -- prepublish --skip-gh-release
+        run: npm exec napi -- prepublish -t npm --no-gh-release
 
       - name: Publish to NPM
         run: |
