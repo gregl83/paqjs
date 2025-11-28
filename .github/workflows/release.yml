@@ -113,9 +113,6 @@ jobs:
       - name: List packages
         run: ls -R npm
 
-      - name: Prepare packages
-        run: npm exec napi -- prepublish -t npm --no-gh-release
-
       - name: Publish to NPM
         run: |
           for dir in npm/*/; do
