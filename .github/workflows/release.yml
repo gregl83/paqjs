@@ -99,6 +99,9 @@ jobs:
           merge-multiple: true
           path: artifacts
 
+      - name: Prepublish
+        run: npm run prepublishOnly
+
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:

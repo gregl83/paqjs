@@ -1,4 +1,4 @@
-import { hashSource } from 'paqjs';
+import { hashSource } from '@paqjs/core';
 import * as fs from 'fs';
 
 function main(): void {

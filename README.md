@@ -1,5 +1,5 @@
 [![Build](https://github.com/gregl83/paqjs/actions/workflows/release.yml/badge.svg)](https://github.com/gregl83/paqjs/actions/workflows/release.yml)
-[![NPMjs.com](https://img.shields.io/npm/v/paqjs.svg)](https://www.npmjs.com/package/paqjs)
+[![NPMjs.com](https://img.shields.io/npm/v/%40paqjs%2Fcore.svg)](https://www.npmjs.com/package/@paqjs/core)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/gregl83/paqpy/blob/master/LICENSE)
 
 # paqjs
@@ -49,7 +49,7 @@ Not recommended due to instability of main branch in-between tagged releases.
 ### Typescript
 
 ```typescript
-import { hashSource } from 'paqjs';
+import { hashSource } from '@paqjs/core';
 
 const source: string = "/patth/to/source";
 const ignore_hidden: boolean = true; // .dir or .file
@@ -65,7 +65,7 @@ console.log(source_hash);
 ### Javascript
 
 ```javascript
-const { hashSource } = require('paqjs');
+const { hashSource } = require('@paqjs/core');
 
 const source = "/path/to/source";
 const ignore_hidden = true; // .dir or .file

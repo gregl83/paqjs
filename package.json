@@ -51,5 +51,12 @@
   "bugs": {
     "url": "https://github.com/gregl83/paqjs/issues"
   },
-  "homepage": "https://github.com/gregl83/paqjs#readme"
+  "homepage": "https://github.com/gregl83/paqjs#readme",
+  "optionalDependencies": {
+    "@paqjs/core-linux-x64-gnu": "1.3.3",
+    "@paqjs/core-darwin-x64": "1.3.3",
+    "@paqjs/core-win32-x64-msvc": "1.3.3",
+    "@paqjs/core-linux-arm64-gnu": "1.3.3",
+    "@paqjs/core-darwin-arm64": "1.3.3"
+  }
 }

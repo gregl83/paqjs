@@ -1,4 +1,4 @@
-const { hashSource } = require('paqjs');
+const { hashSource } = require('@paqjs/core');
 const fs = require('fs');
 
 function main() {
