@@ -104,8 +104,11 @@ jobs:
         with:
           files: artifacts/*
 
+      - name: Create npm directories
+        run: npm exec napi -- create-npm-dirs
+
       - name: Move Artifacts
-        run: npm exec napi -- artifacts --dir ./artifacts
+        run: npm exec napi -- artifacts --output-dir ./artifacts
 
       - name: List packages
         run: ls -R npm
@@ -113,9 +116,7 @@ jobs:
       - name: Publish to NPM
         run: |
           for dir in npm/*/; do
-            cd "$dir"
-            npm publish --provenance --access public
-            cd ../..
+            npm publish "$dir" --provenance --access public
           done
           npm publish --provenance --access public
         env:
