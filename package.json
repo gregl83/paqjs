@@ -44,7 +44,7 @@
     "@napi-rs/cli": "^3.4.1"
   },
   "engines": {
-    "node": ">= 10"
+    "node": ">= 20"
   },
   "author": "Gregory Langlais (https://gregorylanglais.com)",
   "license": "MIT",
