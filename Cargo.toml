@@ -21,9 +21,9 @@ publish = false
 crate-type = ["cdylib"]
 
 [dependencies]
-napi = { version = "2.10.0", default-features = false, features = ["napi4"] }
-napi-derive = "2.10.0"
+napi = { version = "2.16.17", default-features = false, features = ["napi4"] }
+napi-derive = "2.16.13"
 paq = "1.4.0"
 
 [build-dependencies]
-napi-build = "2.0.1"
+napi-build = "2.3.1"
