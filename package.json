@@ -1,6 +1,6 @@
 {
   "name": "@paqjs/core",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "description": "Hash file or directory recursively.",
   "main": "index.js",
   "types": "index.d.ts",
@@ -53,10 +53,10 @@
   },
   "homepage": "https://github.com/gregl83/paqjs#readme",
   "optionalDependencies": {
-    "@paqjs/core-linux-x64-gnu": "1.3.3",
-    "@paqjs/core-darwin-x64": "1.3.3",
-    "@paqjs/core-win32-x64-msvc": "1.3.3",
-    "@paqjs/core-linux-arm64-gnu": "1.3.3",
-    "@paqjs/core-darwin-arm64": "1.3.3"
+    "@paqjs/core-linux-x64-gnu": "1.4.0",
+    "@paqjs/core-darwin-x64": "1.4.0",
+    "@paqjs/core-win32-x64-msvc": "1.4.0",
+    "@paqjs/core-linux-arm64-gnu": "1.4.0",
+    "@paqjs/core-darwin-arm64": "1.4.0"
   }
 }
