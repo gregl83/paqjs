@@ -120,6 +120,8 @@ jobs:
         run: |
           for dir in npm/*/; do
             npm publish "$dir" --provenance --access public
+            echo "Sleeping for 15 seconds to let NPM registry sync..."
+            sleep 20
           done
           npm publish --provenance --access public
         env:
