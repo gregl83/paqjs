@@ -118,11 +118,24 @@ jobs:
 
       - name: Publish to NPM
         run: |
+          publish_if_new() {
+            local dir=$1
+            local name=$(cat "$dir/package.json" | jq -r .name)
+            local version=$(cat "$dir/package.json" | jq -r .version)
+            echo "Checking $name@$version..."
+            if npm view "$name@$version" > /dev/null 2>&1; then
+              echo "⚠️  $name@$version already exists on npm. Skipping to prevent 409 error."
+            else
+              echo "🚀 Publishing $name@$version..."
+              npm publish "$dir" --provenance --access public
+              echo "Sleeping for 60 seconds..."
+              sleep 60
+            fi
+          }
           for dir in npm/*/; do
-            npm publish "$dir" --provenance --access public
-            echo "Sleeping for 15 seconds to let NPM registry sync..."
-            sleep 20
+            publish_if_new "$dir"
           done
-          npm publish --provenance --access public
+          publish_if_new "."
+
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
