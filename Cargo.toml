@@ -1,6 +1,6 @@
 [package]
 name = "paqjs"
-version = "1.4.0"
+version = "1.4.1"
 authors = ["Gregory Langlais <_@gregorylanglais.com>"]
 edition = "2021"
 description = "Hash file or directory recursively."
@@ -23,7 +23,7 @@ crate-type = ["cdylib"]
 [dependencies]
 napi = { version = "2.16.17", default-features = false, features = ["napi4"] }
 napi-derive = "2.16.13"
-paq = "1.4.0"
+paq = "1.4.1"
 
 [build-dependencies]
 napi-build = "2.3.1"

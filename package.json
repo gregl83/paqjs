@@ -1,6 +1,6 @@
 {
   "name": "@paqjs/core",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Hash file or directory recursively.",
   "main": "index.js",
   "types": "index.d.ts",
@@ -9,10 +9,11 @@
     "packageName": "@paqjs/core",
     "targets": [
       "x86_64-unknown-linux-gnu",
-      "x86_64-apple-darwin",
+      "i686-unknown-linux-gnu",
       "x86_64-pc-windows-msvc",
-      "aarch64-unknown-linux-gnu",
-      "aarch64-apple-darwin"
+      "i686-pc-windows-msvc",
+      "aarch64-apple-darwin",
+      "x86_64-apple-darwin"
     ]
   },
   "files": [
@@ -53,10 +54,11 @@
   },
   "homepage": "https://github.com/gregl83/paqjs#readme",
   "optionalDependencies": {
-    "@paqjs/core-linux-x64-gnu": "1.4.0",
-    "@paqjs/core-darwin-x64": "1.4.0",
-    "@paqjs/core-win32-x64-msvc": "1.4.0",
-    "@paqjs/core-linux-arm64-gnu": "1.4.0",
-    "@paqjs/core-darwin-arm64": "1.4.0"
+    "@paqjs/core-linux-x64-gnu": "1.4.1",
+    "@paqjs/core-linux-ia32-gnu": "1.4.1",
+    "@paqjs/core-win32-x64-msvc": "1.4.1",
+    "@paqjs/core-win32-ia32-msvc": "1.4.1",
+    "@paqjs/core-darwin-x64": "1.4.1",
+    "@paqjs/core-darwin-arm64": "1.4.1"
   }
 }
