@@ -1,6 +1,6 @@
 {
   "name": "@paqjs/core",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "Hash file or directory recursively.",
   "main": "index.js",
   "types": "index.d.ts",
@@ -28,7 +28,7 @@
     "build": "napi build --platform --release",
     "build:debug": "napi build --platform",
     "artifacts": "napi artifacts",
-    "prepublishOnly": "napi prepublish -t npm"
+    "test": "node --test tests/hash-source.test.js"
   },
   "repository": {
     "type": "git",
@@ -42,23 +42,27 @@
     "rust"
   ],
   "devDependencies": {
-    "@napi-rs/cli": "^3.4.1"
+    "@napi-rs/cli": "3.5.0"
   },
   "engines": {
     "node": ">= 20"
   },
   "author": "Gregory Langlais (https://gregorylanglais.com)",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "bugs": {
     "url": "https://github.com/gregl83/paqjs/issues"
   },
   "homepage": "https://github.com/gregl83/paqjs#readme",
   "optionalDependencies": {
-    "@paqjs/core-linux-x64-gnu": "1.4.1",
-    "@paqjs/core-linux-ia32-gnu": "1.4.1",
-    "@paqjs/core-win32-x64-msvc": "1.4.1",
-    "@paqjs/core-win32-ia32-msvc": "1.4.1",
-    "@paqjs/core-darwin-x64": "1.4.1",
-    "@paqjs/core-darwin-arm64": "1.4.1"
+    "@paqjs/core-linux-x64-gnu": "1.5.0",
+    "@paqjs/core-linux-ia32-gnu": "1.5.0",
+    "@paqjs/core-win32-x64-msvc": "1.5.0",
+    "@paqjs/core-win32-ia32-msvc": "1.5.0",
+    "@paqjs/core-darwin-x64": "1.5.0",
+    "@paqjs/core-darwin-arm64": "1.5.0"
   }
 }

@@ -3,10 +3,15 @@ name: Release
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 permissions:
   contents: write
   id-token: write
+
+concurrency:
+  group: release-${{ github.event.release.tag_name || github.ref }}
+  cancel-in-progress: false
 
 env:
   DEBUG: napi:*
@@ -19,29 +24,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # --- Linux ---
           - os: ubuntu-latest
-            architecture: x64
             target: x86_64-unknown-linux-gnu
           - os: ubuntu-latest
-            architecture: x86
             target: i686-unknown-linux-gnu
-
-          # --- Windows ---
           - os: windows-latest
-            architecture: x64
             target: x86_64-pc-windows-msvc
           - os: windows-latest
-            architecture: x86
             target: i686-pc-windows-msvc
-
-          # --- macOS Apple Silicon ---
           - os: macos-latest
-            architecture: arm64
             target: aarch64-apple-darwin
-          # --- macOS Intel ---
           - os: macos-latest
-            architecture: x64
             target: x86_64-apple-darwin
 
     steps:
@@ -51,37 +44,50 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
 
-      - name: Install 32-bit Support
+      - name: Install 32-bit Linux support
         if: matrix.target == 'i686-unknown-linux-gnu'
         run: |
           sudo apt-get update
           sudo apt-get install -y gcc-multilib g++-multilib
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Build Binary
+      - name: Build binary
         run: npm run build -- --target ${{ matrix.target }}
         env:
           RUSTFLAGS: ${{ contains(matrix.os, 'macos') && '-C link-arg=-undefined -C link-arg=dynamic_lookup' || '' }}
 
-      - name: Upload Artifact
+      - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
-          name: bindings-${{ matrix.target }}
+          name: binding-${{ matrix.target }}
           path: "*.node"
           if-no-files-found: error
 
+      - name: Upload JavaScript entrypoints
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
+        uses: actions/upload-artifact@v4
+        with:
+          name: binding-entrypoints
+          path: |
+            index.js
+            index.d.ts
+          if-no-files-found: error
+
   publish:
-    name: Publish
+    name: ${{ github.event_name == 'release' && 'Publish' || 'Package dry run' }}
     runs-on: ubuntu-latest
     needs: build
+    env:
+      SHOULD_PUBLISH: ${{ github.event_name == 'release' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -89,55 +95,122 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: https://registry.npmjs.org
+          cache: npm
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Download Artifacts
+      - name: Validate release tag
+        if: github.event_name == 'release'
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          expected_tag="v$(node -p "require('./package.json').version")"
+          if [[ "$RELEASE_TAG" != "$expected_tag" ]]; then
+            echo "Release tag $RELEASE_TAG does not match package version $expected_tag."
+            exit 1
+          fi
+
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: bindings-*
+          pattern: binding-*
           merge-multiple: true
           path: artifacts
 
-      - name: Prepublish
-        run: npm run prepublishOnly
-
-      - name: Upload to GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: artifacts/*
-
-      - name: Create npm directories
-        run: npm exec napi -- create-npm-dirs
-
-      - name: Move Artifacts
-        run: npm exec napi -- artifacts --output-dir ./artifacts
-
-      - name: List packages
-        run: ls -R npm
-
-      - name: Publish to NPM
+      - name: Validate artifacts
         run: |
-          publish_if_new() {
-            local dir=$1
-            local name=$(cat "$dir/package.json" | jq -r .name)
-            local version=$(cat "$dir/package.json" | jq -r .version)
-            echo "Checking $name@$version..."
-            if npm view "$name@$version" > /dev/null 2>&1; then
-              echo "⚠️  $name@$version already exists on npm. Skipping to prevent 409 error."
-            else
-              echo "🚀 Publishing $name@$version..."
-              npm publish "$dir" --provenance --access public
-              echo "Sleeping for 60 seconds..."
-              sleep 60
-            fi
-          }
-          for dir in npm/*/; do
-            publish_if_new "$dir"
-          done
-          publish_if_new "."
+          test "$(find artifacts -maxdepth 1 -name '*.node' | wc -l)" -eq 6
+          test -f artifacts/index.js
+          test -f artifacts/index.d.ts
 
+      - name: Restore entrypoints and native test binding
+        run: |
+          cp artifacts/index.js artifacts/index.d.ts .
+          cp artifacts/paqjs.linux-x64-gnu.node .
+
+      - name: Test assembled binding
+        run: npm test
+
+      - name: Assemble npm packages
+        run: |
+          npm exec napi -- create-npm-dirs
+          npm exec napi -- artifacts --output-dir ./artifacts
+          npm exec napi -- pre-publish --skip-optional-publish --tag-style npm
+
+      - name: Verify package tarballs
+        run: |
+          for package_path in npm/*/; do
+            npm pack --dry-run --json "./$package_path" > /dev/null
+          done
+          npm pack --dry-run --json . > /dev/null
+
+      - name: Publish to npm
+        if: env.SHOULD_PUBLISH == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          published_version() {
+            npm view "$1@$2" version 2>/dev/null || true
+          }
+
+          publish_package() {
+            local package_path="$1"
+            local manifest="$package_path/package.json"
+            local name
+            local version
+            local existing
+            local output
+            local status
+
+            name=$(node -p "require(require('node:path').resolve(process.argv[1])).name" "$manifest")
+            version=$(node -p "require(require('node:path').resolve(process.argv[1])).version" "$manifest")
+            existing=$(published_version "$name" "$version")
+
+            if [[ "$existing" == "$version" ]]; then
+              echo "$name@$version already exists; skipping."
+              return 0
+            fi
+
+            for attempt in 1 2 3; do
+              echo "Publishing $name@$version (attempt $attempt)..."
+              set +e
+              output=$(npm publish "$package_path" --provenance --access public 2>&1)
+              status=$?
+              set -e
+              printf '%s\n' "$output"
+
+              if [[ $status -eq 0 ]]; then
+                return 0
+              fi
+
+              if printf '%s' "$output" | grep -Eq 'E(429|5[0-9]{2})|429 Too Many Requests|5[0-9]{2} (Internal Server Error|Bad Gateway|Service Unavailable|Gateway Timeout)'; then
+                sleep $((attempt * 10))
+                continue
+              fi
+
+              if printf '%s' "$output" | grep -Eq 'E409|409 Conflict|previously published'; then
+                existing=$(published_version "$name" "$version")
+                if [[ "$existing" == "$version" ]]; then
+                  echo "$name@$version is confirmed published; continuing."
+                  return 0
+                fi
+              fi
+
+              return "$status"
+            done
+
+            return "$status"
+          }
+
+          for package_path in npm/*/; do
+            publish_package "./$package_path"
+          done
+          publish_package "."
+
+      - name: Upload to GitHub release
+        if: github.event_name == 'release' && success()
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*.node

@@ -1,6 +1,6 @@
 [package]
 name = "paqjs"
-version = "1.4.1"
+version = "1.5.0"
 authors = ["Gregory Langlais <_@gregorylanglais.com>"]
 edition = "2021"
 description = "Hash file or directory recursively."
@@ -11,19 +11,19 @@ keywords = [
     "blake3",
     "directory-traversal",
     "cryptographic",
-    "python",
+    "nodejs",
 ]
 repository = "https://github.com/gregl83/paqjs"
-homepage = "https://pypi.org/project/paqjs"
+homepage = "https://www.npmjs.com/package/@paqjs/core"
 publish = false
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
-napi = { version = "2.16.17", default-features = false, features = ["napi4"] }
-napi-derive = "2.16.13"
-paq = "1.4.1"
+napi = { version = "3.12.2", default-features = false, features = ["napi4"] }
+napi-derive = "3.6.3"
+paq = "~1.5.0"
 
 [build-dependencies]
-napi-build = "2.3.1"
+napi-build = "2.4.1"
