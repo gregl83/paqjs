@@ -1,4 +1,4 @@
-[![Build](https://github.com/gregl83/paqjs/actions/workflows/release.yml/badge.svg)](https://github.com/gregl83/paqjs/actions/workflows/release.yml)
+[![CI](https://github.com/gregl83/paqjs/actions/workflows/ci.yml/badge.svg)](https://github.com/gregl83/paqjs/actions/workflows/ci.yml)
 [![NPMjs.com](https://img.shields.io/npm/v/%40paqjs%2Fcore.svg)](https://www.npmjs.com/package/@paqjs/core)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/gregl83/paqjs/blob/master/LICENSE)
 
@@ -35,7 +35,7 @@ See [paq benchmarks](https://github.com/gregl83/paq/blob/main/docs/benchmarks.md
 ### Install From NPM
 
 ```bash
-npm install paqjs
+npm install @paqjs/core
 ```
 
 ### Install From Repository (Unstable)
@@ -53,7 +53,7 @@ Not recommended due to instability of main branch in-between tagged releases.
 ```typescript
 import { hashSource } from '@paqjs/core';
 
-const source: string = "/patth/to/source";
+const source: string = "/path/to/source";
 const ignore_hidden: boolean = true; // .dir or .file
 
 const source_hash: string = hashSource(
@@ -63,6 +63,9 @@ const source_hash: string = hashSource(
 
 console.log(source_hash);
 ```
+
+`hashSource` returns a hexadecimal hash string. File system failures throw a
+JavaScript `Error` with the underlying `paq` error message.
 
 ### Javascript
 
