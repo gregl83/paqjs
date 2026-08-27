@@ -34,8 +34,10 @@ jobs:
             target: i686-pc-windows-msvc
           - os: macos-latest
             target: aarch64-apple-darwin
+            macos_deployment_target: "11.0"
           - os: macos-latest
             target: x86_64-apple-darwin
+            macos_deployment_target: "10.15"
 
     steps:
       - uses: actions/checkout@v4
@@ -63,6 +65,7 @@ jobs:
       - name: Build binary
         run: npm run build -- --target ${{ matrix.target }}
         env:
+          MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_deployment_target }}
           RUSTFLAGS: ${{ contains(matrix.os, 'macos') && '-C link-arg=-undefined -C link-arg=dynamic_lookup' || '' }}
 
       - name: Upload binary
