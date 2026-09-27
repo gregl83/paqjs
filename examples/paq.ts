@@ -1,5 +1,4 @@
 import { hashSource } from '@paqjs/core';
-import * as fs from 'fs';
 
 function main(): void {
     const args: string[] = process.argv.slice(2);
@@ -8,17 +7,20 @@ function main(): void {
     let source: string | null = null;
     let flagIgnoreHidden: boolean = false;
 
-    if (args.includes('--help') || args.includes('-h')) {
-        console.log(`usage: paq [-h] [--ignore-hidden] source
+    let followLinks = false;
 
-Hash file or directory recursively.
+    if (args.includes('--help') || args.includes('-h')) {
+        console.log(`usage: paq [-h] [--ignore-hidden] [--follow] source
+
+Hash directory or file with BLAKE3.
 
 positional arguments:
   source              Source to hash (filesystem path)
 
 options:
   -h, --help          show this help message and exit
-  -i, --ignore-hidden Ignore files or directories starting with dot (default: ignored)
+  -i, --ignore-hidden Ignore files or directories starting with dot (default: included)
+  -L, --follow        Follow symbolic links and hash their targets
 `);
         process.exit(0);
     }
@@ -28,6 +30,8 @@ options:
         const arg = args[i];
         if (arg === '-i' || arg === '--ignore-hidden') {
             flagIgnoreHidden = true;
+        } else if (args[i] === '-L' || args[i] === '--follow') {
+            followLinks = true;
         } else if (!source) {
             source = arg;
         }
@@ -38,18 +42,8 @@ options:
         process.exit(1);
     }
 
-    // Logic from paq.py:
-    // If flag is present (-i), we do NOT ignore hidden files (false).
-    // If flag is absent, we DO ignore hidden files (true).
-    const shouldIgnoreHidden: boolean = !flagIgnoreHidden;
-
     try {
-        // Check if source exists before passing to Rust
-        if (!fs.existsSync(source)) {
-            throw new Error(`'${source}' does not exist`);
-        }
-
-        const result: string = hashSource(source, shouldIgnoreHidden);
+        const result: string = hashSource(source, flagIgnoreHidden, followLinks);
         console.log(result);
     } catch (e: unknown) {
         // In TypeScript, errors in catch blocks are 'unknown' type

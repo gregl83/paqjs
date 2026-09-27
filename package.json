@@ -1,7 +1,7 @@
 {
   "name": "@paqjs/core",
-  "version": "1.5.0",
-  "description": "Hash file or directory recursively.",
+  "version": "2.0.0",
+  "description": "Hash directory or file with BLAKE3.",
   "main": "index.js",
   "types": "index.d.ts",
   "napi": {
@@ -58,11 +58,11 @@
   },
   "homepage": "https://github.com/gregl83/paqjs#readme",
   "optionalDependencies": {
-    "@paqjs/core-linux-x64-gnu": "1.5.0",
-    "@paqjs/core-linux-ia32-gnu": "1.5.0",
-    "@paqjs/core-win32-x64-msvc": "1.5.0",
-    "@paqjs/core-win32-ia32-msvc": "1.5.0",
-    "@paqjs/core-darwin-x64": "1.5.0",
-    "@paqjs/core-darwin-arm64": "1.5.0"
+    "@paqjs/core-linux-x64-gnu": "2.0.0",
+    "@paqjs/core-linux-ia32-gnu": "2.0.0",
+    "@paqjs/core-win32-x64-msvc": "2.0.0",
+    "@paqjs/core-win32-ia32-msvc": "2.0.0",
+    "@paqjs/core-darwin-x64": "2.0.0",
+    "@paqjs/core-darwin-arm64": "2.0.0"
   }
 }

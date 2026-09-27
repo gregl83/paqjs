@@ -1,24 +1,26 @@
 const { hashSource } = require('@paqjs/core');
-const fs = require('fs');
 
 function main() {
     const args = process.argv.slice(2);
 
     // Basic Argument Parsing
     let source = null;
-    let flagIgnoreHidden = false; // Corresponds to args.ignore_hidden in Python
+    let flagIgnoreHidden = false;
+
+    let followLinks = false;
 
     if (args.includes('--help') || args.includes('-h')) {
-        console.log(`usage: paq [-h] [--ignore-hidden] source
+        console.log(`usage: paq [-h] [--ignore-hidden] [--follow] source
 
-Hash file or directory recursively.
+Hash directory or file with BLAKE3.
 
 positional arguments:
   source              Source to hash (filesystem path)
 
 options:
   -h, --help          show this help message and exit
-  -i, --ignore-hidden Ignore files or directories starting with dot (default: ignored)
+  -i, --ignore-hidden Ignore files or directories starting with dot (default: included)
+  -L, --follow        Follow symbolic links and hash their targets
 `);
         process.exit(0);
     }
@@ -27,6 +29,8 @@ options:
     for (let i = 0; i < args.length; i++) {
         if (args[i] === '-i' || args[i] === '--ignore-hidden') {
             flagIgnoreHidden = true;
+        } else if (args[i] === '-L' || args[i] === '--follow') {
+            followLinks = true;
         } else if (!source) {
             source = args[i];
         }
@@ -37,19 +41,8 @@ options:
         process.exit(1);
     }
 
-    // Logic from paq.py:
-    // "ignore_hidden = not args.ignore_hidden"
-    // If flag is present, ignore_hidden becomes false (meaning include them).
-    // If flag is absent, ignore_hidden becomes true (meaning ignore them).
-    const shouldIgnoreHidden = !flagIgnoreHidden;
-
     try {
-        // Check if source exists before passing to Rust to match Python behavior
-        if (!fs.existsSync(source)) {
-            throw new Error(`'${source}' does not exist`);
-        }
-
-        const result = hashSource(source, shouldIgnoreHidden);
+        const result = hashSource(source, flagIgnoreHidden, followLinks);
         console.log(result);
     } catch (e) {
         console.error(`Error: ${e.message}`);
