@@ -1,9 +1,9 @@
 [package]
 name = "paqjs"
-version = "1.5.0"
+version = "2.0.0"
 authors = ["Gregory Langlais <_@gregorylanglais.com>"]
 edition = "2021"
-description = "Hash file or directory recursively."
+description = "Hash directory or file with BLAKE3."
 license = "MIT"
 readme = "README.md"
 keywords = [
@@ -23,7 +23,7 @@ crate-type = ["cdylib"]
 [dependencies]
 napi = { version = "3.12.2", default-features = false, features = ["napi4"] }
 napi-derive = "3.6.3"
-paq = "~1.5.0"
+paq = "~2.0.0"
 
 [build-dependencies]
 napi-build = "2.4.1"
